@@ -92,11 +92,20 @@ function insertTable {
 }
 
 function deleteRecord {
-    typeset id 
-    typeset tableName
+    typeset id tableName
     read -p "Enter Table Name: " tableName
     read -p "Enter Id to delete: " id
     sed -i "/^${id}/d" "${tableName}/${tableName}.txt"
+}
+
+function selectTable {
+    typeset tableName colsNum
+
+    read -p "Enter Table Name: " tableName
+
+    tail -1 ${tableName}/${tableName}-meta.txt | sed 's/:/ /g' 
+    sed 's/:/ /g'  ${tableName}/${tableName}.txt && echo
+
 }
 
 function showTablesMenu {
@@ -116,6 +125,7 @@ function showTablesMenu {
             insertTable
             ;;
             "Select") echo "Select"
+            selectTable
             ;;
             "Delete") echo "Delete"
             deleteRecord
