@@ -108,6 +108,23 @@ function selectTable {
 
 }
 
+function updateTable {
+    typeset tableName pk colName oldValue newValue colnum
+
+    read -p "Enter Table Name: " tableName
+
+    read -p "Enter Pk: " pk
+
+    read -p "Enter col Name: " colName
+
+    colnum=$(awk -F: '{ for (i=1; i<=NF; i++) { if ($i == "'"$colName"'") { print i; exit } } }' ${tableName}/${tableName}-meta.txt)
+    oldValue=$( grep "^${pk}" ${tableName}/${tableName}.txt | cut -d ':' -f $colnum )
+
+    read -p "Enter New Value: " newValue
+
+    sed -i "/^$pkValue/s/$oldValue/$newValue/" ${tableName}/${tableName}.txt
+}
+
 function showTablesMenu {
     select choice2 in "Create Table" "List Tables" "Drop Tables" "Insert" "Select" "Delete" "Update" Quit
         do  
@@ -131,6 +148,7 @@ function showTablesMenu {
             deleteRecord
             ;;
             "Update") echo "Update"
+            updateTable
             ;;
             Quit) break
             ;;
