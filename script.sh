@@ -30,7 +30,27 @@ function validateParamName {
 #----------------------- Start Fuctions Area-----------------------------------------
 
 function createDb {
-    mkdir databases/$1
+
+    typeset status
+    
+    while true
+    do
+        validateParamName $1
+        if [ $? -ne 0 ]
+        then
+            exit
+        fi
+        break
+    done
+    
+    if [ -d "databases/$1" ]
+    then
+        echo "A Database with same name already exist"
+    else
+        mkdir databases/$1
+        echo "Database Created Successfully"
+    fi
+    
 }
 
 function listDbs {
@@ -193,7 +213,7 @@ PS3="Select Option: "
 select choice in "Create DB" "List DB" "Connect to DB" "Drop DB" Exit
 do
     case $choice in
-        "Create DB") echo "Create DB"
+        "Create DB") echo "Creating DB: "
             read -p "Enter the Db name: " DbName
             createDb $DbName
         ;;
