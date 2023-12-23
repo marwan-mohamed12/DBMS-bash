@@ -109,7 +109,7 @@ function connectDb {
     
     while true
     do
-        read -p "Db name: " DbName
+        read -p " Enter Database name: " DbName
         validateParamName $DbName
         if [ $? -eq 0 ]
         then
@@ -140,7 +140,7 @@ function DropDb {
     
     while true
     do
-        read -p "Db name: " DbName
+        read -p "Enter Database Name: " DbName
         validateParamName $DbName
         if [ $? -eq 0 ]
         then
@@ -204,12 +204,12 @@ function createTable {
     do
         if [ $num -eq 0 ]
         then
-            read -p "Enter The PK Col: " colName
+            read -p "Enter The PK Column: " colName
         else
-            read -p "Col Name: " colName
+            read -p "Enter Column Name: " colName
         fi
         
-        echo "Choose an option (1-2): "
+        echo "Choose an option: "
         select colType in "string" "integer"
         do
             case $colType in
@@ -267,7 +267,7 @@ function dropTable {
             rm -r "$tableName"
             echo "Table ${tableName} deleted successfully"
         else
-            echo "Table Doesn't Exist"
+            echo "Table ${tableName} Doesn't Exist"
             return
         fi
     fi
@@ -468,7 +468,7 @@ function updateTable {
         return
     fi
     
-    read -p "Enter col Name: " colName
+    read -p "Enter column name: " colName
     
     if [ -z "$(grep ${colName} ${tableName}/${tableName}-meta.txt)" ]
     then
@@ -488,26 +488,19 @@ function showTablesMenu {
     select choice2 in "Create Table" "List Tables" "Drop Tables" "Insert" "Select" "Delete" "Update" "Quit"
     do
         case $choice2 in
-            "Create Table") echo "Create Table"
-                createTable
+            "Create Table") createTable
             ;;
-            "List Tables") echo "List Tables"
-                listTables
+            "List Tables") listTables
             ;;
-            "Drop Tables") echo "Drop Tables"
-                dropTable
+            "Drop Tables") dropTable
             ;;
-            "Insert") echo "Insert"
-                insertTable
+            "Insert") insertTable
             ;;
-            "Select") echo "Select"
-                selectTable
+            "Select") selectTable
             ;;
-            "Delete") echo "Delete"
-                deleteRecord
+            "Delete") deleteRecord
             ;;
-            "Update") echo "Update"
-                updateTable
+            "Update") updateTable
             ;;
             "Quit")
                 cd ../..
@@ -524,16 +517,16 @@ function showTablesMenu {
 #----------------------- Start Script Main body------------------------------------
 PS3="Select Option: "
 
-select choice in "Create DB" "List All DBs" "Connect to DB" "Drop DB" "Exit"
+select choice in "Create Database" "List Databases" "Connect Database" "Drop Database" "Exit"
 do
     case $choice in
-        "Create DB") createDb
+        "Create Database") createDb
         ;;
-        "List All DBs") listDbs
+        "List Databases") listDbs
         ;;
-        "Connect to DB") connectDb
+        "Connect Database") connectDb
         ;;
-        "Drop DB") DropDb
+        "Drop Database") DropDb
         ;;
         "Exit") exit
         ;;
