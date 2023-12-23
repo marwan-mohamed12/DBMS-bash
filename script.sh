@@ -54,8 +54,9 @@ function createDb {
 }
 
 function listDbs {
-    if [ -n "$(ls -A databases/)" ]
+    if [ -n "$(ls databases/)" ]
     then
+        echo "Databases List : "
         ls databases/
     else
         echo "No Databases Found"
@@ -63,7 +64,33 @@ function listDbs {
 }
 
 function connectDb {
-    cd databases/$1
+    
+    if [ ! -d "databases/" ] || [ -z "$(ls databases/ )" ]
+    then
+        echo "No Databases Found To connect"
+        exit
+    fi
+    
+    while true
+    do
+        validateParamName $1
+        if [ $? -ne 0 ]
+        then
+            exit
+        fi
+        break
+    done
+    
+    if [ ! -d "databases/$1" ]
+    then
+        echo "Database Not Found"
+    else
+        cd databases/$1
+        echo "You are connected to $1 database"
+        showTablesMenu
+        exit
+    fi
+    
 }
 
 function DropDb {
@@ -215,10 +242,10 @@ function showTablesMenu {
 #----------------------- Start Script Main body------------------------------------
 PS3="Select Option: "
 
-select choice in "Create DB" "List DB" "Connect to DB" "Drop DB" Exit
+select choice in "Create DB" "List All DBs" "Connect to DB" "Drop DB" Exit
 do
     case $choice in
-        "Create DB") 
+        "Create DB")
             read -p "Enter the Db name: " DbName
             createDb $DbName
         ;;
@@ -227,7 +254,6 @@ do
         "Connect to DB") echo "Connect to DB"
             read -p "Db name: " DbName
             connectDb $DbName
-            showTablesMenu
         ;;
         "Drop DB") echo "Drop DB"
             read -p "Db name: " DbName
