@@ -21,6 +21,7 @@ function validateParamName {
         echo "Name Shouldn't Have Special Characters"
         return 1
     fi
+
 }
 
 
@@ -31,23 +32,23 @@ function validateParamName {
 
 function createDb {
     
-    typeset status
+    typeset status DbName
     
     while true
     do
-        validateParamName $1
-        if [ $? -ne 0 ]
+        read -p "Enter the Db name: " DbName
+        validateParamName $DbName
+        if [ $? -eq 0 ] 
         then
             break
         fi
-        break
     done
     
-    if [ -d "databases/$1" ]
+    if [ -d "databases/$DbName" ]
     then
         echo "A Database with same name already exist"
     else
-        mkdir databases/$1
+        mkdir databases/$DbName
         echo "Database Created Successfully"
     fi
     
@@ -65,7 +66,9 @@ function listDbs {
 
 function connectDb {
     
-    if [ ! -d "databases/" ] || [ -z "$(ls databases/ )" ]
+    typeset DbName
+
+    if [ -z "$(ls databases/ )" ]
     then
         echo "No Databases Found To connect"
         exit
@@ -73,29 +76,30 @@ function connectDb {
     
     while true
     do
-        validateParamName $1
-        if [ $? -ne 0 ]
+        read -p "Db name: " DbName
+        validateParamName $DbName
+        if [ $? -eq 0 ] 
         then
             break
         fi
-        break
     done
     
-    if [ ! -d "databases/$1" ]
+    if [ ! -d "databases/$DbName" ]
     then
         echo "Database Not Found"
     else
-        cd databases/$1
-        echo "You are connected to $1 database"
+        cd databases/$DbName
+        echo "You are connected to $DbName database"
         showTablesMenu
-        exit
     fi
     
 }
 
 function DropDb {
     
-    if [ ! -d "databases/" ] || [ -z "$(ls databases/ )" ]
+    typeset DbName
+
+    if [ -z "$(ls databases/ )" ]
     then
         echo "No Databases Found To Remove"
         return
@@ -103,41 +107,81 @@ function DropDb {
     
     while true
     do
-        validateParamName $1
-        if [ $? -ne 0 ]; then
-            return
+        read -p "Db name: " DbName
+        validateParamName $DbName
+        if [ $? -eq 0 ] 
+        then
+            break
         fi
-        break
     done
     
-    if [ ! -d "databases/$1" ]
+    if [ ! -d "databases/$DbName" ]
     then
         echo "Database Not Found"
     else
-        rm -r databases/$1
-        echo "$1 deleted successfully"
+        rm -r databases/$DbName
+        echo "$DbName deleted successfully"
         exit
     fi
-
+    
 }
 
 function createTable {
-    read -p "Enter Table Name: " tableName
+    
+    typeset tableName cols num=0 nameRecord="" dataTypeRecord=""
+    
+    while true
+    do
+        read -p "Enter Table Name: " tableName
+        validateParamName $tableName
+        if [ $? -eq 0 ] 
+        then
+            break
+        fi
+    done
+    
+    if [ -d "databases/$tbName" ]
+    then
+        echo "Table Already Exists"
+        read -n 1 -s -r -p "Press any key to continue..."
+        exit
+    fi
+    
     mkdir $tableName
     cd $tableName
     
     touch "${tableName}.txt"
     touch "${tableName}-meta.txt"
+
+    while true
+    do 
+        read -p "Enter Number Of Columns: " cols
+        if [[ ! $cols =~ ^[0-9]+$ ]]
+        then
+            echo "Cols number must be a number"
+            exit
+        elif [ $cols -eq 0 ]
+        then 
+            echo "Cols number should be greater than 0"
+            exit
+        fi
+        break
+    done
     
-    read -p "Enter Number Of Columns: " cols
-    
-    num=0
-    nameRecord=""
-    dataTypeRecord=""
+    typeset colName colType
     while [ $num -lt $cols ]
     do
         read -p "Col Name: " colName
-        read -p "Col Datatype (string or num): " colType
+
+        echo "Choose an option (1-2): "
+        select colType in "string" "integer" 
+        do 
+            case $colType in
+                "integer" | "string" ) break ;;
+                *) echo "Invalid Choice" ;;
+            esac
+        done
+
         
         if [ $num -eq $((cols-1)) ]
         then
@@ -229,7 +273,7 @@ function updateTable {
 }
 
 function showTablesMenu {
-    select choice2 in "Create Table" "List Tables" "Drop Tables" "Insert" "Select" "Delete" "Update" Quit
+    select choice2 in "Create Table" "List Tables" "Drop Tables" "Insert" "Select" "Delete" "Update" "Quit"
     do
         case $choice2 in
             "Create Table") echo "Create Table"
@@ -253,7 +297,9 @@ function showTablesMenu {
             "Update") echo "Update"
                 updateTable
             ;;
-            Quit) break
+            "Quit")
+                cd ../..
+                break
             ;;
             *) echo "$choice2 is not valid"
             ;;
@@ -266,24 +312,18 @@ function showTablesMenu {
 #----------------------- Start Script Main body------------------------------------
 PS3="Select Option: "
 
-select choice in "Create DB" "List All DBs" "Connect to DB" "Drop DB" Exit
+select choice in "Create DB" "List All DBs" "Connect to DB" "Drop DB" "Exit"
 do
     case $choice in
-        "Create DB")
-            read -p "Enter the Db name: " DbName
-            createDb $DbName
+        "Create DB") createDb
         ;;
         "List All DBs") listDbs
         ;;
-        "Connect to DB") echo "Connect to DB"
-            read -p "Db name: " DbName
-            connectDb $DbName
+        "Connect to DB") connectDb
         ;;
-        "Drop DB") echo "Drop DB"
-            read -p "Db name: " DbName
-            DropDb $DbName
+        "Drop DB") DropDb 
         ;;
-        Exit) exit 0
+        "Exit") exit
         ;;
         *) echo "$choice is not valid"
         ;;
