@@ -38,7 +38,7 @@ function createDb {
         validateParamName $1
         if [ $? -ne 0 ]
         then
-            exit
+            break
         fi
         break
     done
@@ -76,7 +76,7 @@ function connectDb {
         validateParamName $1
         if [ $? -ne 0 ]
         then
-            exit
+            break
         fi
         break
     done
@@ -94,7 +94,31 @@ function connectDb {
 }
 
 function DropDb {
-    rm -r databases/$1
+    
+    if [ ! -d "databases/" ] || [ -z "$(ls databases/ )" ]
+    then
+        echo "No Databases Found To Remove"
+        return
+    fi
+    
+    while true
+    do
+        validateParamName $1
+        if [ $? -ne 0 ]; then
+            return
+        fi
+        break
+    done
+    
+    if [ ! -d "databases/$1" ]
+    then
+        echo "Database Not Found"
+    else
+        rm -r databases/$1
+        echo "$1 deleted successfully"
+        exit
+    fi
+
 }
 
 function createTable {
