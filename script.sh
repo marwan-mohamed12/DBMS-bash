@@ -384,7 +384,7 @@ function deleteRecord {
             sed -i "/^${pk}/d" "${tableName}/${tableName}.txt"
             echo "The record of Pk = ${pk} has been deleted successfully."
             break
-        else 
+        else
             echo "The PK doesn't Exist"
             return
         fi
@@ -393,15 +393,15 @@ function deleteRecord {
 }
 
 function selectTable {
-
+    
     typeset tableName colsNum
-
+    
     if [ -z "$(ls)" ]
     then
         echo "No Tables To Select From, Database Is Empty."
         return
     fi
-
+    
     while true
     do
         read -p "Enter Table Name: " tableName
@@ -424,20 +424,20 @@ function selectTable {
         return
     fi
     
-    tail -1 ${tableName}/${tableName}-meta.txt | sed 's/:/ /g'
-    sed 's/:/ /g'  ${tableName}/${tableName}.txt && echo
+    tail -1 ${tableName}/${tableName}-meta.txt | sed 's/:/\t/g'
+    sed 's/:/\t/g'  ${tableName}/${tableName}.txt && echo
     
 }
 
 function updateTable {
     typeset tableName pk colName oldValue newValue colnum
-
+    
     if [ -z "$(ls)" ]
     then
         echo "No Tables To Delete, Database Is Empty."
         return
     fi
-
+    
     while true
     do
         read -p "Enter Table Name: " tableName
@@ -461,15 +461,15 @@ function updateTable {
     fi
     
     read -p "Enter Pk: " pk
-
+    
     if [ -z "$(grep ^${pk} ${tableName}/${tableName}.txt)" ]
     then
         echo "The PK doesn't Exist"
         return
     fi
-
+    
     read -p "Enter col Name: " colName
-
+    
     if [ -z "$(grep ${colName} ${tableName}/${tableName}-meta.txt)" ]
     then
         echo "The ${colName} column doesn't Exist"
