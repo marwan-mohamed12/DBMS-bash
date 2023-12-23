@@ -30,7 +30,7 @@ function validateParamName {
 #----------------------- Start Fuctions Area-----------------------------------------
 
 function createDb {
-
+    
     typeset status
     
     while true
@@ -54,7 +54,12 @@ function createDb {
 }
 
 function listDbs {
-    ls databases/
+    if [ -n "$(ls -A databases/)" ]
+    then
+        ls databases/
+    else
+        echo "No Databases Found"
+    fi
 }
 
 function connectDb {
@@ -213,12 +218,11 @@ PS3="Select Option: "
 select choice in "Create DB" "List DB" "Connect to DB" "Drop DB" Exit
 do
     case $choice in
-        "Create DB") echo "Creating DB: "
+        "Create DB") 
             read -p "Enter the Db name: " DbName
             createDb $DbName
         ;;
-        "List DB") echo "List DB"
-            listDbs
+        "List All DBs") listDbs
         ;;
         "Connect to DB") echo "Connect to DB"
             read -p "Db name: " DbName
