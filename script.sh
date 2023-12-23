@@ -71,7 +71,7 @@ function connectDb {
     if [ -z "$(ls databases/ )" ]
     then
         echo "No Databases Found To connect"
-        exit
+        return
     fi
     
     while true
@@ -121,7 +121,6 @@ function DropDb {
     else
         rm -r databases/$DbName
         echo "$DbName deleted successfully"
-        exit
     fi
     
 }
@@ -140,11 +139,10 @@ function createTable {
         fi
     done
     
-    if [ -d "databases/$tbName" ]
+    if [ -d "/$tableName" ]
     then
         echo "Table Already Exists"
-        read -n 1 -s -r -p "Press any key to continue..."
-        exit
+        return
     fi
     
     mkdir $tableName
@@ -203,12 +201,30 @@ function createTable {
 }
 
 function listTables {
-    ls
+    if [ -z "$(ls)" ] 
+    then
+        echo "No Tables To Show, Database Is Empty."
+    else 
+        ls
+    fi
 }
 
 function dropTable {
-    read -p "Enter Table name: " rTable
-    rm -r $rTable
+    typeset tableName
+
+    if [ -z "$(ls)" ] 
+    then
+        echo "No Tables To Drop, Database Is Empty."
+    else 
+        read -p "Enter Table name: " tableName
+        if [ ! -d "/$tableName"] 
+        then
+            echo "Table Doesn't Exist"
+            return
+        else
+            rm -r "/$tableName"
+        fi
+    fi
 }
 
 function insertTable {
