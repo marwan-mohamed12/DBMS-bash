@@ -304,7 +304,26 @@ function insertTable {
     do
         typeset colName=$(tail -1 ${tableName}/${tableName}-meta.txt | cut -d ':' -f $((num+1)))
         typeset colDatatype=$(head -1 ${tableName}/${tableName}-meta.txt | cut -d ':' -f $((num+1)))
-        read -p "Enter value of ${colName} in ${colDatatype}: " colValue
+        
+        while true
+        do
+            read -p "Enter value of ${colName} in ${colDatatype}: " colValue
+            validateDataType $colValue $colDatatype
+
+            if [ $num -eq 0 ]
+            then
+                if [ ! -z "$(grep ^${colValue} ${tableName}/${tableName}.txt)" ]
+                then
+                    echo "This Pk Exist, choose another one"
+                    continue
+                fi
+            fi
+
+            if [ $? -eq 0 ]
+            then
+                break
+            fi
+        done
         
         if [ $num -eq $((colNum-1)) ]
         then
