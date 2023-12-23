@@ -21,7 +21,7 @@ function validateParamName {
         echo "Name Shouldn't Have Special Characters"
         return 1
     fi
-
+    
 }
 
 
@@ -38,7 +38,7 @@ function createDb {
     do
         read -p "Enter the Db name: " DbName
         validateParamName $DbName
-        if [ $? -eq 0 ] 
+        if [ $? -eq 0 ]
         then
             break
         fi
@@ -67,7 +67,7 @@ function listDbs {
 function connectDb {
     
     typeset DbName
-
+    
     if [ -z "$(ls databases/ )" ]
     then
         echo "No Databases Found To connect"
@@ -78,7 +78,7 @@ function connectDb {
     do
         read -p "Db name: " DbName
         validateParamName $DbName
-        if [ $? -eq 0 ] 
+        if [ $? -eq 0 ]
         then
             break
         fi
@@ -98,7 +98,7 @@ function connectDb {
 function DropDb {
     
     typeset DbName
-
+    
     if [ -z "$(ls databases/ )" ]
     then
         echo "No Databases Found To Remove"
@@ -109,7 +109,7 @@ function DropDb {
     do
         read -p "Db name: " DbName
         validateParamName $DbName
-        if [ $? -eq 0 ] 
+        if [ $? -eq 0 ]
         then
             break
         fi
@@ -133,7 +133,7 @@ function createTable {
     do
         read -p "Enter Table Name: " tableName
         validateParamName $tableName
-        if [ $? -eq 0 ] 
+        if [ $? -eq 0 ]
         then
             break
         fi
@@ -150,16 +150,16 @@ function createTable {
     
     touch "${tableName}.txt"
     touch "${tableName}-meta.txt"
-
+    
     while true
-    do 
+    do
         read -p "Enter Number Of Columns: " cols
         if [[ ! $cols =~ ^[0-9]+$ ]]
         then
             echo "Cols number must be a number"
             exit
         elif [ $cols -eq 0 ]
-        then 
+        then
             echo "Cols number should be greater than 0"
             exit
         fi
@@ -170,16 +170,16 @@ function createTable {
     while [ $num -lt $cols ]
     do
         read -p "Col Name: " colName
-
+        
         echo "Choose an option (1-2): "
-        select colType in "string" "integer" 
-        do 
+        select colType in "string" "integer"
+        do
             case $colType in
                 "integer" | "string" ) break ;;
                 *) echo "Invalid Choice" ;;
             esac
         done
-
+        
         
         if [ $num -eq $((cols-1)) ]
         then
@@ -201,28 +201,38 @@ function createTable {
 }
 
 function listTables {
-    if [ -z "$(ls)" ] 
+    if [ -z "$(ls)" ]
     then
         echo "No Tables To Show, Database Is Empty."
-    else 
+    else
         ls
     fi
 }
 
 function dropTable {
     typeset tableName
-
-    if [ -z "$(ls)" ] 
+    
+    if [ -z "$(ls)" ]
     then
         echo "No Tables To Drop, Database Is Empty."
-    else 
-        read -p "Enter Table name: " tableName
-        if [ ! -d "/$tableName"] 
+    else
+        while true
+        do
+            read -p "Enter Table Name: " tableName
+            validateParamName $tableName
+            if [ $? -eq 0 ]
+            then
+                break
+            fi
+        done
+
+        if [ -d "$tableName" ]
         then
+            rm -r "$tableName"
+            echo "Table ${tableName} deleted successfully"
+        else
             echo "Table Doesn't Exist"
             return
-        else
-            rm -r "/$tableName"
         fi
     fi
 }
@@ -337,7 +347,7 @@ do
         ;;
         "Connect to DB") connectDb
         ;;
-        "Drop DB") DropDb 
+        "Drop DB") DropDb
         ;;
         "Exit") exit
         ;;
