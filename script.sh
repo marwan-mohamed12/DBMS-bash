@@ -109,7 +109,7 @@ function connectDb {
     
     while true
     do
-        read -p " Enter Database name: " DbName
+        read -p "Enter Database name: " DbName
         validateParamName $DbName
         if [ $? -eq 0 ]
         then
