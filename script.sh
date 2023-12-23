@@ -24,6 +24,39 @@ function validateParamName {
     
 }
 
+#$1 -> Value
+#$2 -> datatype
+function validateDataType {
+    
+    if [ -z "$1" ]
+    then
+        echo " value can't be empty."
+        return 1
+    fi
+    
+    if [[ "$1" =~ ^[0-9]+$ ]]
+    then
+        if [ "$2" == "integer" ]
+        then
+            return 0
+        else
+            echo "The value should be a String."
+            return 1
+        fi
+    fi
+    
+    if [[ "$1" =~ ^[a-zA-Z0-9_]+$ ]];
+    then
+        if [ "$2" == "string" ]
+        then
+            return 0
+        else
+            echo "The value should be an Integer."
+            return 1
+        fi
+    fi
+    
+}
 
 
 #----------------------- End Utils Fuctions-----------------------------------------
@@ -225,7 +258,7 @@ function dropTable {
                 break
             fi
         done
-
+        
         if [ -d "$tableName" ]
         then
             rm -r "$tableName"
@@ -238,7 +271,30 @@ function dropTable {
 }
 
 function insertTable {
-    read -p "Enter Table Name: " tableName
+    
+    if [ -z "$(ls)" ]
+    then
+        echo "No Tables To Insert, Database Is Empty."
+        return
+    fi
+    
+    typeset tableName
+    while true
+    do
+        read -p "Enter Table Name: " tableName
+        validateParamName $tableName
+        if [ $? -eq 0 ]
+        then
+            break
+        fi
+    done
+    
+    if [ ! -d "$tableName" ]
+    then
+        echo "Table Doesn't Exist"
+        return
+    fi
+    
     typeset colNum
     colNum=$( head -1 ${tableName}/${tableName}-meta.txt | awk -F':' '{print NF}')
     
