@@ -1,6 +1,33 @@
 #!/bin/bash
 
-#----------------------- Star Fuctions Area-----------------------------------------
+#----------------------- Start Utils Fuctions---------------------------------------
+
+function validateParamName {
+    
+    if [ -z "$1" ]
+    then
+        echo "The name field cannot be left empty"
+        return 1
+    elif [[ "$1" =~ ^[0-9] ]]
+    then
+        echo "Name should not begin with a number"
+        return 1
+    elif [[ "$1" = *" "* ]]
+    then
+        echo "Name Shouldn't Have Spaces"
+        return 1
+    elif [[ "$1" =~ [^a-zA-Z0-9_] ]]
+    then
+        echo "Name Shouldn't Have Special Characters"
+        return 1
+    fi
+}
+
+
+
+#----------------------- End Utils Fuctions-----------------------------------------
+
+#----------------------- Start Fuctions Area-----------------------------------------
 
 function createDb {
     mkdir databases/$1
@@ -22,20 +49,20 @@ function createTable {
     read -p "Enter Table Name: " tableName
     mkdir $tableName
     cd $tableName
-
+    
     touch "${tableName}.txt"
     touch "${tableName}-meta.txt"
-
+    
     read -p "Enter Number Of Columns: " cols
-
+    
     num=0
     nameRecord=""
     dataTypeRecord=""
     while [ $num -lt $cols ]
-    do 
+    do
         read -p "Col Name: " colName
         read -p "Col Datatype (string or num): " colType
-
+        
         if [ $num -eq $((cols-1)) ]
         then
             nameRecord="${nameRecord}${colName}"
@@ -44,19 +71,19 @@ function createTable {
             nameRecord="${nameRecord}${colName}:"
             dataTypeRecord="${dataTypeRecord}${colType}:"
         fi
-
+        
         let num=$num+1
     done
-
+    
     echo $dataTypeRecord >> "${tableName}-meta.txt"
     echo $nameRecord >> "${tableName}-meta.txt"
-
+    
     cd ../
-
+    
 }
 
 function listTables {
-    ls 
+    ls
 }
 
 function dropTable {
@@ -83,12 +110,12 @@ function insertTable {
         else
             insertVal="${insertVal}${colValue}:"
         fi
-
+        
         let num=$num+1
     done
-
+    
     echo ${insertVal} >> "${tableName}/${tableName}.txt"
-
+    
 }
 
 function deleteRecord {
@@ -100,62 +127,62 @@ function deleteRecord {
 
 function selectTable {
     typeset tableName colsNum
-
+    
     read -p "Enter Table Name: " tableName
-
-    tail -1 ${tableName}/${tableName}-meta.txt | sed 's/:/ /g' 
+    
+    tail -1 ${tableName}/${tableName}-meta.txt | sed 's/:/ /g'
     sed 's/:/ /g'  ${tableName}/${tableName}.txt && echo
-
+    
 }
 
 function updateTable {
     typeset tableName pk colName oldValue newValue colnum
-
+    
     read -p "Enter Table Name: " tableName
-
+    
     read -p "Enter Pk: " pk
-
+    
     read -p "Enter col Name: " colName
-
+    
     colnum=$(awk -F: '{ for (i=1; i<=NF; i++) { if ($i == "'"$colName"'") { print i; exit } } }' ${tableName}/${tableName}-meta.txt)
     oldValue=$( grep "^${pk}" ${tableName}/${tableName}.txt | cut -d ':' -f $colnum )
-
+    
     read -p "Enter New Value: " newValue
-
+    
     sed -i "/^$pkValue/s/$oldValue/$newValue/" ${tableName}/${tableName}.txt
 }
 
 function showTablesMenu {
     select choice2 in "Create Table" "List Tables" "Drop Tables" "Insert" "Select" "Delete" "Update" Quit
-        do  
-            case $choice2 in
+    do
+        case $choice2 in
             "Create Table") echo "Create Table"
-            createTable
+                createTable
             ;;
             "List Tables") echo "List Tables"
-            listTables
+                listTables
             ;;
             "Drop Tables") echo "Drop Tables"
-            dropTable
+                dropTable
             ;;
             "Insert") echo "Insert"
-            insertTable
+                insertTable
             ;;
             "Select") echo "Select"
-            selectTable
+                selectTable
             ;;
             "Delete") echo "Delete"
-            deleteRecord
+                deleteRecord
             ;;
             "Update") echo "Update"
-            updateTable
+                updateTable
             ;;
             Quit) break
             ;;
             *) echo "$choice2 is not valid"
             ;;
-            esac
-        done
+        esac
+    done
 }
 
 #----------------------- End Fuctions Area-----------------------------------------
@@ -167,20 +194,20 @@ select choice in "Create DB" "List DB" "Connect to DB" "Drop DB" Exit
 do
     case $choice in
         "Create DB") echo "Create DB"
-        read -p "Enter the Db name: " DbName
-        createDb $DbName
+            read -p "Enter the Db name: " DbName
+            createDb $DbName
         ;;
         "List DB") echo "List DB"
-        listDbs
+            listDbs
         ;;
         "Connect to DB") echo "Connect to DB"
-        read -p "Db name: " DbName
-        connectDb $DbName
-        showTablesMenu
+            read -p "Db name: " DbName
+            connectDb $DbName
+            showTablesMenu
         ;;
         "Drop DB") echo "Drop DB"
-        read -p "Db name: " DbName
-        DropDb $DbName
+            read -p "Db name: " DbName
+            DropDb $DbName
         ;;
         Exit) exit 0
         ;;
