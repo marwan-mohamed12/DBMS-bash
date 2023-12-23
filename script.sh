@@ -368,7 +368,8 @@ function deleteRecord {
         return
     fi
     
-    if [ -s "$tableName/$$tableName.txt" ]; then
+    if [ -s "$tableName/$$tableName.txt" ]
+    then
         echo "The $tableName is empty."
         return
     fi
@@ -392,9 +393,36 @@ function deleteRecord {
 }
 
 function selectTable {
+
     typeset tableName colsNum
+
+    if [ -z "$(ls)" ]
+    then
+        echo "No Tables To Select From, Database Is Empty."
+        return
+    fi
+
+    while true
+    do
+        read -p "Enter Table Name: " tableName
+        validateParamName $tableName
+        if [ $? -eq 0 ]
+        then
+            break
+        fi
+    done
     
-    read -p "Enter Table Name: " tableName
+    if [ ! -d "$tableName" ]
+    then
+        echo "Table Doesn't Exist"
+        return
+    fi
+    
+    if [ -s "$tableName/$$tableName.txt" ]
+    then
+        echo "The $tableName is empty."
+        return
+    fi
     
     tail -1 ${tableName}/${tableName}-meta.txt | sed 's/:/ /g'
     sed 's/:/ /g'  ${tableName}/${tableName}.txt && echo
@@ -403,6 +431,34 @@ function selectTable {
 
 function updateTable {
     typeset tableName pk colName oldValue newValue colnum
+
+    if [ -z "$(ls)" ]
+    then
+        echo "No Tables To Select From, Database Is Empty."
+        return
+    fi
+
+    while true
+    do
+        read -p "Enter Table Name: " tableName
+        validateParamName $tableName
+        if [ $? -eq 0 ]
+        then
+            break
+        fi
+    done
+    
+    if [ ! -d "$tableName" ]
+    then
+        echo "Table Doesn't Exist"
+        return
+    fi
+    
+    if [ -s "$tableName/$$tableName.txt" ]
+    then
+        echo "The $tableName is empty."
+        return
+    fi
     
     read -p "Enter Table Name: " tableName
     
