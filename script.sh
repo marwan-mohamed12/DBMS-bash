@@ -434,7 +434,7 @@ function updateTable {
 
     if [ -z "$(ls)" ]
     then
-        echo "No Tables To Select From, Database Is Empty."
+        echo "No Tables To Delete, Database Is Empty."
         return
     fi
 
@@ -450,21 +450,31 @@ function updateTable {
     
     if [ ! -d "$tableName" ]
     then
-        echo "Table Doesn't Exist"
+        echo "${tableName} Doesn't Exist"
         return
     fi
     
-    if [ -s "$tableName/$$tableName.txt" ]
+    if [ -z "$(cat "$tableName/$tableName.txt")" ]
     then
         echo "The $tableName is empty."
         return
     fi
     
-    read -p "Enter Table Name: " tableName
-    
     read -p "Enter Pk: " pk
-    
+
+    if [ -z "$(grep ^${pk} ${tableName}/${tableName}.txt)" ]
+    then
+        echo "The PK doesn't Exist"
+        return
+    fi
+
     read -p "Enter col Name: " colName
+
+    if [ -z "$(grep ${colName} ${tableName}/${tableName}-meta.txt)" ]
+    then
+        echo "The ${colName} column doesn't Exist"
+        return
+    fi
     
     colnum=$(awk -F: '{ for (i=1; i<=NF; i++) { if ($i == "'"$colName"'") { print i; exit } } }' ${tableName}/${tableName}-meta.txt)
     oldValue=$( grep "^${pk}" ${tableName}/${tableName}.txt | cut -d ':' -f $colnum )
