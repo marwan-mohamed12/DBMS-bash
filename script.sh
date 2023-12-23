@@ -202,27 +202,30 @@ function createTable {
     typeset colName colType
     while [ $num -lt $cols ]
     do
-        read -p "Col Name: " colName
-        
-        echo "Choose an option (1-2): "
-        select colType in "string" "integer"
-        do
-            case $colType in
-                "integer" | "string" ) break ;;
-                *) echo "Invalid Choice" ;;
-            esac
-        done
-        
-        
-        if [ $num -eq $((cols-1)) ]
+        if [ $num -eq 0 ]
         then
-            nameRecord="${nameRecord}${colName}"
-            dataTypeRecord="${dataTypeRecord}${colType}"
+            read -p "Enter The PK Col: " colName
         else
-            nameRecord="${nameRecord}${colName}:"
-            dataTypeRecord="${dataTypeRecord}${colType}:"
+            read -p "Col Name: " colName
         fi
+
+        echo "Choose an option (1-2): "
+            select colType in "string" "integer"
+            do
+                case $colType in
+                    "integer" | "string" ) break ;;
+                    *) echo "Invalid Choice" ;;
+                esac
+            done
         
+            if [ $num -eq $((cols-1)) ]
+            then
+                nameRecord="${nameRecord}${colName}"
+                dataTypeRecord="${dataTypeRecord}${colType}"
+            else
+                nameRecord="${nameRecord}${colName}:"
+                dataTypeRecord="${dataTypeRecord}${colType}:"
+            fi
         let num=$num+1
     done
     
