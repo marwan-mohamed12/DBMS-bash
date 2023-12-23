@@ -172,7 +172,7 @@ function createTable {
         fi
     done
     
-    if [ -d "/$tableName" ]
+    if [ -d "$tableName" ]
     then
         echo "Table Already Exists"
         return
