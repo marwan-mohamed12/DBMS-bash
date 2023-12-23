@@ -208,24 +208,24 @@ function createTable {
         else
             read -p "Col Name: " colName
         fi
-
-        echo "Choose an option (1-2): "
-            select colType in "string" "integer"
-            do
-                case $colType in
-                    "integer" | "string" ) break ;;
-                    *) echo "Invalid Choice" ;;
-                esac
-            done
         
-            if [ $num -eq $((cols-1)) ]
-            then
-                nameRecord="${nameRecord}${colName}"
-                dataTypeRecord="${dataTypeRecord}${colType}"
-            else
-                nameRecord="${nameRecord}${colName}:"
-                dataTypeRecord="${dataTypeRecord}${colType}:"
-            fi
+        echo "Choose an option (1-2): "
+        select colType in "string" "integer"
+        do
+            case $colType in
+                "integer" | "string" ) break ;;
+                *) echo "Invalid Choice" ;;
+            esac
+        done
+        
+        if [ $num -eq $((cols-1)) ]
+        then
+            nameRecord="${nameRecord}${colName}"
+            dataTypeRecord="${dataTypeRecord}${colType}"
+        else
+            nameRecord="${nameRecord}${colName}:"
+            dataTypeRecord="${dataTypeRecord}${colType}:"
+        fi
         let num=$num+1
     done
     
@@ -312,7 +312,7 @@ function insertTable {
         do
             read -p "Enter value of ${colName} in ${colDatatype}: " colValue
             validateDataType $colValue $colDatatype
-
+            
             if [ $num -eq 0 ]
             then
                 if [ ! -z "$(grep ^${colValue} ${tableName}/${tableName}.txt)" ]
@@ -321,7 +321,7 @@ function insertTable {
                     continue
                 fi
             fi
-
+            
             if [ $? -eq 0 ]
             then
                 break
@@ -343,10 +343,52 @@ function insertTable {
 }
 
 function deleteRecord {
-    typeset id tableName
-    read -p "Enter Table Name: " tableName
-    read -p "Enter Id to delete: " id
-    sed -i "/^${id}/d" "${tableName}/${tableName}.txt"
+    
+    typeset pk tableName
+    
+    if [ -z "$(ls)" ]
+    then
+        echo "No Tables To Remove, Database Is Empty."
+        return
+    fi
+    
+    while true
+    do
+        read -p "Enter Table Name: " tableName
+        validateParamName $tableName
+        if [ $? -eq 0 ]
+        then
+            break
+        fi
+    done
+    
+    if [ ! -d "$tableName" ]
+    then
+        echo "Table Doesn't Exist"
+        return
+    fi
+    
+    if [ -s "$tableName/$$tableName.txt" ]; then
+        echo "The $tableName is empty."
+        return
+    fi
+    
+    
+    read -p "Enter the pk of the table to delete: " pk
+    
+    while true
+    do
+        if [ ! -z "$(grep ^${pk} ${tableName}/${tableName}.txt)" ]
+        then
+            sed -i "/^${pk}/d" "${tableName}/${tableName}.txt"
+            echo "The record of Pk = ${pk} has been deleted successfully."
+            break
+        else 
+            echo "The PK doesn't Exist"
+            return
+        fi
+    done
+    
 }
 
 function selectTable {
