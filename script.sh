@@ -69,7 +69,7 @@ function createDb {
     
     while true
     do
-        read -p "Enter the Db name: " DbName
+        read -p "Enter the Database name: " DbName
         validateParamName $DbName
         if [ $? -eq 0 ]
         then

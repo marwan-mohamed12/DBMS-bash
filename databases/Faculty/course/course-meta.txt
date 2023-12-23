@@ -1,0 +1,2 @@
+integer:string:string
+id:c_name:c_code
