@@ -33,20 +33,23 @@ https://github.com/marwan-mohamed12/DBMS-bash/assets/40841193/2fb65e67-e0e9-482e
   cd DBMS-bash
   ```
 2- Run script:
-  
+
   On Windows:
-    - If you are using Git Bash, open the Git Bash terminal and navigate to the cloned directory. Run:
-      ```
-        chmod u+x script.sh
-        ./script.sh
-      ```
-    - If you have [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install) installed, you can follow the Linux instructions.
+   
+  - If you are using Git Bash, open the Git Bash terminal and navigate to the cloned directory.Run:
+    ```
+    chmod +x script.sh
+    ./script.sh
+    ```
+      
+  - If you have [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install) installed, you can follow the Linux instructions.
 
   On Linux or macOS:
-    ```
-      chmod u+x script.sh
-      ./script.sh
-    ```
+  
+   ```
+   chmod +x script.sh
+   ./script.sh
+   ```
 ## Limitations
 - This DBMS is a lightweight script and may not cover advanced database features.
 
