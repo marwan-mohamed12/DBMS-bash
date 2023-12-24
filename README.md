@@ -10,6 +10,7 @@ BashDBMS is a lightweight Database Management System (DBMS) implemented in Bash 
 ## *Features*
 1- Database Operations
   - Create a database
+  - List all databases
   - Connect to a database
   - Drop a database
     
