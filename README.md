@@ -33,6 +33,7 @@ https://github.com/marwan-mohamed12/DBMS-bash/assets/40841193/2fb65e67-e0e9-482e
   cd DBMS-bash
   ```
 2- Run script:
+  
   On Windows:
     - If you are using Git Bash, open the Git Bash terminal and navigate to the cloned directory. Run:
       ```
